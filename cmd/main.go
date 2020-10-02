@@ -5,7 +5,8 @@ import (
 
 	"github.com/akhripko/gremlin-grammes/src/options"
 	"github.com/northwesternmutual/grammes"
-	//"github.com/northwesternmutual/grammes/query/traversal"
+	p "github.com/northwesternmutual/grammes/query/predicate"
+	t "github.com/northwesternmutual/grammes/query/traversal"
 )
 
 func main() {
@@ -35,7 +36,7 @@ func main() {
 	// Create a graph traversal.
 	g := grammes.Traversal()
 
-	res, err := client.ExecuteQuery(g.V("state_TX").PropertyMap())
+	res, err := client.ExecuteQuery(g.V(":ma").PropertyMap())
 	if err != nil {
 		log.Fatalf("Querying error: %s\n", err.Error())
 	}
@@ -72,7 +73,8 @@ func main() {
 		OutE("provides").
 		InV().
 		HasLabel("service").
-		//And(traversal.String("has('max_rate', lte(50))"), "has('min_rate', gte(0))").
+		And(t.NewTraversal().Has("max_rate", p.LessThanOrEqual(50)).Raw(),
+			t.NewTraversal().Has("min_rate", p.GreaterThanOrEqual(0)).Raw()).
 		Path().
 		Limit(100)
 
