@@ -19,7 +19,7 @@ github.com/hashicorp/hcl/json/token
 github.com/magiconair/properties
 # github.com/mitchellh/mapstructure v1.1.2
 github.com/mitchellh/mapstructure
-# github.com/northwesternmutual/grammes v1.2.0
+# github.com/northwesternmutual/grammes v1.2.0 => github.com/akhripko/grammes v1.2.1-0.20201006085739-9d57ab8e1eea
 ## explicit
 github.com/northwesternmutual/grammes
 github.com/northwesternmutual/grammes/gremconnect

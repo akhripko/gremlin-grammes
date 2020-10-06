@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"log"
 
 	"github.com/akhripko/gremlin-grammes/src/options"
@@ -28,7 +29,8 @@ func main() {
 	//log.Println(tlsConfig)
 
 	// Creates a new client with the localhost IP.
-	client, err := grammes.DialWithWebSocket("wss://127.0.0.1:8182")
+	client, err := grammes.DialWithWebSocket("wss://127.0.0.1:8182",
+		grammes.WithTLS(&tls.Config{InsecureSkipVerify: true}))
 	if err != nil {
 		log.Fatalf("Error while creating client: %s\n", err.Error())
 	}
@@ -63,7 +65,10 @@ func main() {
 	//.path()
 	//.limit(200)
 
-	query := g.V().HasLabel("state").Has("name", "TX").InE("located").OutV().
+	query := g.V().HasLabel("state").
+		Has("name", "TX").
+		InE("located").
+		OutV().
 		HasLabel("city").
 		InE("located").
 		OutV().
