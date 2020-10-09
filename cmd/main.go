@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"log"
 
 	"github.com/akhripko/gremlin-grammes/src/options"
@@ -12,6 +13,8 @@ import (
 
 func main() {
 	config := options.ReadEnv()
+	log.SetFlags(log.Lmsgprefix)
+	log.SetPrefix(">>")
 	log.Println(config.GremlinAddr)
 
 	// Load CA cert
@@ -38,58 +41,68 @@ func main() {
 	// Create a graph traversal.
 	g := grammes.Traversal()
 
-	res, err := client.ExecuteQuery(g.V(":ma").PropertyMap())
-	if err != nil {
-		log.Fatalf("Querying error: %s\n", err.Error())
-	}
+	//g.V().has('zip', 'name', '78704').
+	//	in('lives').
+	//	hasLabel('provider').as('p').
+	//	outE('provides').
+	//	and(has('max_rate', lte(50)), has('min_rate', gte(0))).
+	//	inV().
+	//	hasLabel('service').
+	//	select('p').
+	//	properties().hasKey('sitter_id').dedup().value()
 
-	// Log out the response.
-	for _, r := range res {
-		log.Println(string(r))
-	}
-
-	//
-	// g.V().hasLabel('state').has('name', 'TX').inE('located').outV().hasLabel('city').inE('located').outV().inE('lives').outV().hasLabel('provider').outE('provides').inV().hasLabel('service').and(has('max_rate', lte(50)), has('min_rate', gte(0))).path().limit(10)
-	//
-	//g.V().hasLabel('state')
-	//.has('name', 'TX')
-	//.inE('located')
-	//.outV().hasLabel('city')
-	//.inE('located')
-	//.outV()
-	//.inE('lives')
-	//.outV().hasLabel('provider')
-	//.outE('provides')
-	//.inV().hasLabel('service')
-	//.and(has('max_rate', lte(50)), has('min_rate', gte(0)))
-	//.path()
-	//.limit(200)
-
-	query := g.V().HasLabel("state").
-		Has("name", "TX").
-		InE("located").
-		OutV().
-		HasLabel("city").
-		InE("located").
-		OutV().
-		InE("lives").
-		OutV().
-		HasLabel("provider").
+	query := g.V().Has("zip", "name", "78704").
+		In("lives").
+		HasLabel("provider").As("p").
 		OutE("provides").
-		InV().
-		HasLabel("service").
 		And(t.NewTraversal().Has("max_rate", p.LessThanOrEqual(50)).Raw(),
 			t.NewTraversal().Has("min_rate", p.GreaterThanOrEqual(0)).Raw()).
-		Path().
-		Limit(100)
+		InV().
+		HasLabel("service").
+		Select("p").
+		Properties().HasKey("sitter_id").Dedup().Value()
 
-	res, err = client.ExecuteQuery(query)
+	log.Printf("\nquery:\n===========\n%s\n===========\n", query.String())
+
+	res, err := client.ExecuteQuery(query)
 	if err != nil {
 		log.Fatalf("Querying error: %s\n", err.Error())
 	}
 
-	// Log out the response.
-	for _, r := range res {
-		log.Printf("\n>>>>PATH:\n%s\n==============\n", string(r))
+	data, err := UnmarshalInt32List(res)
+	if err != nil {
+		log.Fatalf("Querying error: %s\n", err.Error())
 	}
+	log.Printf("\ncount:%d\n%v\n", len(data), data)
+}
+
+func UnmarshalInt32List(recs [][]byte) ([]int32, error) {
+	var (
+		data  GremlinInt32List
+		items []GremlinInt32Value
+		err   error
+	)
+	if len(recs) == 0 {
+		return nil, nil
+	}
+	for _, r := range recs {
+		err = json.Unmarshal(r, &data)
+		if err != nil {
+			return nil, err
+		}
+		items = append(items, data.Items...)
+	}
+	res := make([]int32, 0, len(items))
+	for _, v := range items {
+		res = append(res, v.Value)
+	}
+	return res, nil
+}
+
+type GremlinInt32List struct {
+	Items []GremlinInt32Value `json:"@value"`
+}
+
+type GremlinInt32Value struct {
+	Value int32 `json:"@value"`
 }
