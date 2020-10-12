@@ -7,4 +7,5 @@ replace github.com/northwesternmutual/grammes v1.2.0 => github.com/akhripko/gram
 require (
 	github.com/northwesternmutual/grammes v1.2.0
 	github.com/spf13/viper v1.7.1
+	github.com/stretchr/testify v1.3.0
 )
