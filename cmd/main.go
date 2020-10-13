@@ -67,6 +67,7 @@ func main() {
 		CareType:   "childCare",
 		HourlyRate: &enrollment.HourlyRateGRPCModel{Min: 0, Max: 50},
 		PageSize:   10,
+		PageToken:  "0",
 	})
 
 	//query, err := enrollment.BuildQuery(&enrollment.GRPCModel{
@@ -121,3 +122,8 @@ type GremlinInt32List struct {
 type GremlinInt32Value struct {
 	Value int32 `json:"@value"`
 }
+
+//type GremlinInt32Value struct {
+//	Type  string      `json:"@type"`
+//	Value interface{} `json:"@value"`
+//}

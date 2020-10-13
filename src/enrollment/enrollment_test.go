@@ -19,7 +19,9 @@ func Test_BuildQuery_fromZIP(te *testing.T) {
 			t.NewTraversal().Has("min_rate", p.GreaterThanOrEqual(0)).Raw(),
 			t.NewTraversal().Has("service", "childCare").Raw()).
 		InV().
-		Select("p").Range(0, 10).
+		Select("p").
+		Order().By("sitter_id").
+		Range(0, 10).
 		Properties().HasKey("sitter_id").Value()
 
 	query, err := BuildQuery(&GRPCModel{
@@ -42,6 +44,7 @@ func Test_BuildQuery_fromService(te *testing.T) {
 			t.NewTraversal().Has("min_rate", p.GreaterThanOrEqual(0)).Raw()).
 		OutV().
 		HasLabel("provider").
+		Order().By("sitter_id").
 		Range(20, 30).
 		Properties().HasKey("sitter_id").Value()
 

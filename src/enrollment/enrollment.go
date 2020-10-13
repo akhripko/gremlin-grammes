@@ -41,6 +41,8 @@ func BuildQuery(req *GRPCModel) (t.String, error) {
 	if err != nil {
 		return g, err
 	}
+	// order result
+	g = order(g, req)
 	// pagination
 	g, err = pagination(g, req)
 	if err != nil {
@@ -83,10 +85,6 @@ func providersFromService(g t.String, req *GRPCModel) (t.String, error) {
 	return query.OutV().HasLabel("provider"), nil
 }
 
-func forResult(g t.String, _ *GRPCModel) t.String {
-	return g.Properties().HasKey("sitter_id").Value()
-}
-
 func addProviderFilter(g t.String, req *GRPCModel) t.String {
 	if len(req.Gender) > 0 {
 		return g.Has("provider", "gender", req.Gender)
@@ -123,6 +121,15 @@ func appendRateLimits(limits []t.String, req *GRPCModel) []t.String {
 
 func getRawHas(first interface{}, params ...interface{}) t.String {
 	return t.NewTraversal().Has(first, params...).Raw()
+}
+
+func order(q t.String, _ *GRPCModel) t.String {
+	//return q.Order().By("id", t.NewCustomTraversal("asc"))
+	return q.Order().By("sitter_id")
+}
+
+func forResult(g t.String, _ *GRPCModel) t.String {
+	return g.Properties().HasKey("sitter_id").Value()
 }
 
 func pagination(q t.String, req *GRPCModel) (t.String, error) {
