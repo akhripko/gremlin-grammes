@@ -42,7 +42,7 @@ func BuildQuery(req *GRPCModel) (t.String, error) {
 		return g, err
 	}
 	// order result
-	g = order(g, req)
+	//g = order(g, req)
 	// pagination
 	g, err = pagination(g, req)
 	if err != nil {
@@ -125,7 +125,7 @@ func getRawHas(first interface{}, params ...interface{}) t.String {
 
 func order(q t.String, _ *GRPCModel) t.String {
 	//return q.Order().By("id", t.NewCustomTraversal("asc"))
-	return q.Order().By("sitter_id")
+	return q.Order().By(t.NewCustomTraversal("id"))
 }
 
 func forResult(g t.String, _ *GRPCModel) t.String {

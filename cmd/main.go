@@ -2,7 +2,6 @@ package main
 
 import (
 	"crypto/tls"
-	"encoding/json"
 	"log"
 
 	"github.com/akhripko/gremlin-grammes/src/enrollment"
@@ -84,35 +83,12 @@ func main() {
 		log.Fatalf("Querying error: %s\n", err.Error())
 	}
 
-	data, err := UnmarshalInt32List(res)
+	data, err := enrollment.UnmarshalStringList(append(res, res[0]))
 	if err != nil {
 		log.Fatalf("Querying error: %s\n", err.Error())
 	}
 	log.Printf("\ncount:%d\n%v\n", len(data), data)
 	log.Printf("\ncount:%d\n", len(data))
-}
-
-func UnmarshalInt32List(recs [][]byte) ([]int32, error) {
-	var (
-		data  GremlinInt32List
-		items []GremlinInt32Value
-		err   error
-	)
-	if len(recs) == 0 {
-		return nil, nil
-	}
-	for _, r := range recs {
-		err = json.Unmarshal(r, &data)
-		if err != nil {
-			return nil, err
-		}
-		items = append(items, data.Items...)
-	}
-	res := make([]int32, 0, len(items))
-	for _, v := range items {
-		res = append(res, v.Value)
-	}
-	return res, nil
 }
 
 type GremlinInt32List struct {
