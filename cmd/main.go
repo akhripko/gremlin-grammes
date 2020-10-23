@@ -8,6 +8,8 @@ import (
 
 	"github.com/akhripko/gremlin-grammes/src/options"
 	"github.com/northwesternmutual/grammes"
+	p "github.com/northwesternmutual/grammes/query/predicate"
+	t "github.com/northwesternmutual/grammes/query/traversal"
 )
 
 func main() {
@@ -38,36 +40,25 @@ func main() {
 	}
 
 	// Create a graph traversal.
-	//g := grammes.Traversal()
+	g := grammes.Traversal()
 
-	//query := g.V().Has("zip", "name", "78704").
-	//	In("lives").
-	//	HasLabel("provider").As("p").
-	//	OutE("provides").
-	//	And(t.NewTraversal().Has("max_rate", p.LessThanOrEqual(50)).Raw(),
-	//		t.NewTraversal().Has("min_rate", p.GreaterThanOrEqual(0)).Raw(),
-	//		t.NewTraversal().Has("service", "childCare").Raw()).
-	//	InV().
-	//	Select("p").Range(0, 10).
-	//	Properties().HasKey("sitter_id").Value()
+	query := g.V().Has("zip", "name", "78704").
+		In("lives").
+		HasLabel("provider").As("p").
+		OutE("provides").
+		And(t.NewTraversal().Has("max_rate", p.LessThanOrEqual(50)).Raw(),
+			t.NewTraversal().Has("min_rate", p.GreaterThanOrEqual(0)).Raw(),
+			t.NewTraversal().Has("service", "childCare").Raw()).
+		Limit(2).
+		Properties()
 
-	//query := g.V().
-	//	Has("service", "childCare").
-	//	InE("provides").
-	//	And(t.NewTraversal().Has("max_rate", p.LessThanOrEqual(100)).Raw(),
-	//		t.NewTraversal().Has("min_rate", p.GreaterThanOrEqual(0)).Raw()).
-	//	OutV().
-	//	HasLabel("provider").
-	//	Range(0, 10).
-	//	Properties().HasKey("sitter_id").Value()
-
-	query, err := enrollment.BuildQuery(&enrollment.GRPCModel{
-		PostalCode: "78704",
-		CareType:   "childCare",
-		HourlyRate: &enrollment.HourlyRateGRPCModel{Min: 0, Max: 50},
-		PageSize:   10,
-		PageToken:  "0",
-	})
+	//query, err := enrollment.BuildQuery(&enrollment.GRPCModel{
+	//	PostalCode: "78704",
+	//	CareType:   "childCare",
+	//	HourlyRate: &enrollment.HourlyRateGRPCModel{Min: 0, Max: 50},
+	//	PageSize:   10,
+	//	PageToken:  "0",
+	//})
 
 	//query, err := enrollment.BuildQuery(&enrollment.GRPCModel{
 	//	CareType:   "childCare",
